@@ -72,3 +72,5 @@ frontend/.env.production.local
 
 # uv cache (if created in project dir)
 .uv_cache/
+
+qdrant_storage/
