@@ -1,5 +1,6 @@
 import os
 import shutil
+from dotenv import load_dotenv
 from git import Repo
 from urllib.parse import urlparse
 
@@ -16,10 +17,15 @@ from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
+load_dotenv(dotenv_path=".env")
+
 # --- 定数 ---
-QDRANT_HOST = "localhost"
-QDRANT_PORT = 6333
+# QDRANT_HOST = "localhost"
+# QDRANT_PORT = 6333
 REPO_BASE_PATH = "./temp_repos" # クローンしたリポジトリを保存するベース
+
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 
 # --- LlamaIndexのグローバル設定 ---
 # Notebookのセル2の内容をここに持ってくる
@@ -30,6 +36,20 @@ Settings.embedding = HuggingFaceEmbedding(
 )
 print("LlamaIndexのグローバル設定完了。")
 
+def _get_qdrant_client():
+    """Qdrantクライアントを初期化するヘルパー関数"""
+    if QDRANT_URL and QDRANT_API_KEY:
+        # ★ クラウド接続
+        print(f"Qdrant Cloudに接続中: {QDRANT_URL}")
+        return qdrant_client.QdrantClient(
+            url=QDRANT_URL,
+            api_key=QDRANT_API_KEY,
+            port=6333 # gRPCポート
+        )
+    else:
+        # ★ ローカル接続 (フォールバック)
+        print("Qdrant (ローカル) に接続中: localhost:6333")
+        return qdrant_client.QdrantClient(host="localhost", port=6333)
 
 def _get_repo_id_from_url(repo_url: str) -> str:
     """
@@ -85,7 +105,7 @@ def ingest_repo(repo_url: str) -> str:
         print(f"{len(nodes)} 個のノードに分割完了。")
 
         # 4. Qdrantへの保存 (Notebook セル7相当)
-        client = qdrant_client.QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+        client = _get_qdrant_client()
         
         # 既存のコレクションがあれば削除 (本番では注意)
         try:
@@ -117,7 +137,7 @@ def query_repo(repo_id: str, query: str) -> str:
     """
     try:
         # 1. Qdrantからインデックスをロード (Notebook セル8相当)
-        client = qdrant_client.QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+        client = _get_qdrant_client() # ★ ヘルパー関数でクライアント取得
         vector_store = QdrantVectorStore(client=client, collection_name=repo_id)
         
         index = VectorStoreIndex.from_vector_store(
