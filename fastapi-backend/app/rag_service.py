@@ -15,7 +15,7 @@ from llama_index.core import (
 from llama_index.core.node_parser import CodeSplitter
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.llms.openai import OpenAI
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.openai import OpenAIEmbedding
 
 load_dotenv(dotenv_path=".env")
 
@@ -28,11 +28,11 @@ QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 
 # --- LlamaIndexのグローバル設定 ---
-# Notebookのセル2の内容をここに持ってくる
 print("LlamaIndexのグローバル設定を初期化中...")
 Settings.llm = OpenAI(model="gpt-4o")
-Settings.embedding = HuggingFaceEmbedding(
-    model_name="BAAI/bge-small-en-v1.5"
+Settings.embedding = OpenAIEmbedding(
+    model="text-embedding-3-small",
+    embed_batch_size=10
 )
 print("LlamaIndexのグローバル設定完了。")
 
