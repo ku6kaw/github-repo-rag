@@ -1,0 +1,74 @@
+# ----------------------------------------------------------------
+# .gitignore for RAG GitHub App (FastAPI + Next.js)
+# ----------------------------------------------------------------
+
+# --- System / IDE ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# IDE - JetBrains (PyCharm, WebStorm)
+.idea/
+
+# --- Python (fastapi-backend) ---
+
+# Virtual Environments (uv)
+fastapi-backend/.venv/
+
+# Python Caches
+fastapi-backend/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook
+fastapi-backend/.ipynb_checkpoints/
+
+# Temporary files from Git clone
+# (FastAPIがリポジトリをクローンする一時ディレクトリ名を指定)
+fastapi-backend/temp_clones/
+
+# --- Node.js (frontend) ---
+
+# Dependencies
+frontend/node_modules/
+
+# Build directory
+frontend/.next/
+frontend/out/
+
+# Vercel directory
+frontend/.vercel/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# --- Sensitive Files (CRITICAL) ---
+
+# Backend API keys
+fastapi-backend/.env
+
+# Frontend local environment variables
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# --- Other ---
+
+# uv cache (if created in project dir)
+.uv_cache/
